@@ -1,24 +1,32 @@
-import logo from './logo.svg';
-import './App.css';
+import {
+  CalciteButton,
+  CalciteIcon,
+  CalciteSlider,
+} from "@esri/calcite-components-react";
+import "@esri/calcite-components/dist/calcite/calcite.css";
+import "@esri/calcite-components/dist/components/calcite-button";
+import "@esri/calcite-components/dist/components/calcite-icon";
+import "@esri/calcite-components/dist/components/calcite-slider";
+import React, { useState } from "react";
 
 function App() {
+  const [sliderValue, setSliderValue] = useState(50);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <h1>
+        Hello, React <CalciteIcon icon="banana" />
+      </h1>
+      <CalciteButton onClick={(e) => setSliderValue(0)}>Reset</CalciteButton>
+      <CalciteSlider
+        min="1"
+        max="100"
+        value={sliderValue}
+        step="1"
+        onCalciteSliderUpdate={(e) => setSliderValue(e.target.value)}
+      />
+      <p>The slider currently has a value of {sliderValue}</p>
+    </>
   );
 }
 
