@@ -8,6 +8,7 @@ import "@esri/calcite-components/dist/components/calcite-shell";
 import "@esri/calcite-components/dist/components/calcite-shell-panel";
 import { Map } from "@esri/react-arcgis";
 import FeatureLayerWidget from "./components/FeatureLayerWidget";
+import HomeWidget from "./components/HomeWidget";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
             url: "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/US_National_Parks_Annual_Visitation/FeatureServer/0",
           }}
         />
+        <HomeWidget />
       </Map>
     </CalciteShell>
   );

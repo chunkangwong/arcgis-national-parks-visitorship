@@ -19,7 +19,7 @@ function FeatureLayerWidget(props) {
     return function cleanup() {
       props.map.remove(featureLayer);
     };
-  }, []);
+  }, [props]);
 }
 
 export default FeatureLayerWidget;
