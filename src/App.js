@@ -1,8 +1,12 @@
 import {
+  CalciteBlock,
+  CalciteList,
   CalcitePanel,
   CalciteShell,
   CalciteShellPanel,
 } from "@esri/calcite-components-react";
+import "@esri/calcite-components/dist/components/calcite-block";
+import "@esri/calcite-components/dist/components/calcite-list";
 import "@esri/calcite-components/dist/components/calcite-panel";
 import "@esri/calcite-components/dist/components/calcite-shell";
 import "@esri/calcite-components/dist/components/calcite-shell-panel";
@@ -14,7 +18,11 @@ function App() {
   return (
     <CalciteShell>
       <CalciteShellPanel slot="primary-panel">
-        <CalcitePanel heading="National Park Visitation"></CalcitePanel>
+        <CalcitePanel heading="National Park Visitation">
+          <CalciteBlock collapsible heading="Results" id="result-block">
+            <CalciteList id="result-list"></CalciteList>
+          </CalciteBlock>
+        </CalcitePanel>
       </CalciteShellPanel>
       <Map
         viewProperties={{
