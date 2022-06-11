@@ -1,9 +1,10 @@
+import "@esri/calcite-components/dist/calcite/calcite.css";
+import { setAssetPath } from "@esri/calcite-components/dist/components";
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "./index.css";
 import App from "./App";
+import "./index.css";
 import reportWebVitals from "./reportWebVitals";
-import { setAssetPath } from "@esri/calcite-components/dist/components";
 setAssetPath(window.location.href);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
