@@ -186,7 +186,7 @@ function App() {
               ></CalciteSlider>
             </CalciteLabel>
           </CalciteBlock>
-          <CalciteBlock collapsible heading="Results" id="result-block">
+          <CalciteBlock collapsible open heading="Results" id="result-block">
             <CalciteList id="result-list">
               {features.map((feature, index) => (
                 <ResultListItem
