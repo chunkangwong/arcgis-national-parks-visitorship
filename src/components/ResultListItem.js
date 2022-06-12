@@ -2,10 +2,18 @@ import { CalciteListItem, CalciteChip } from "@esri/calcite-components-react";
 import "@esri/calcite-components/dist/components/calcite-list-item";
 import "@esri/calcite-components/dist/components/calcite-chip";
 
-function ResultListItem() {
+function ResultListItem({ attributes, index }) {
+  const { Park, State, TOTAL } = attributes;
+
   return (
-    <CalciteListItem label="" value="" description="">
-      <CalciteChip value="" slot="content-end" scale="s"></CalciteChip>
+    <CalciteListItem
+      label={Park}
+      value={index}
+      description={`${TOTAL.toLocaleString()} visitors`}
+    >
+      <CalciteChip value={State} slot="content-end" scale="s">
+        {State}
+      </CalciteChip>
     </CalciteListItem>
   );
 }

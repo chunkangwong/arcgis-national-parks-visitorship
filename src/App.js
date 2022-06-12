@@ -31,6 +31,7 @@ import { loadModules } from "esri-loader";
 import { useState } from "react";
 import FeatureLayerWidget from "./components/FeatureLayerWidget";
 import HomeWidget from "./components/HomeWidget";
+import ResultListItem from "./components/ResultListItem";
 
 function App() {
   const [orderBy, setOrderBy] = useState("DESC");
@@ -160,7 +161,15 @@ function App() {
             </CalciteLabel>
           </CalciteBlock>
           <CalciteBlock collapsible heading="Results" id="result-block">
-            <CalciteList id="result-list"></CalciteList>
+            <CalciteList id="result-list">
+              {features.map((feature, index) => (
+                <ResultListItem
+                  attributes={feature.attributes}
+                  index={index}
+                  key={index}
+                />
+              ))}
+            </CalciteList>
           </CalciteBlock>
         </CalcitePanel>
       </CalciteShellPanel>
