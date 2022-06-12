@@ -2,8 +2,7 @@ import { useState, useEffect } from "react";
 import { loadModules } from "esri-loader";
 
 function FeatureLayerWidget(props) {
-  const [featureLayer, setFeatureLayer] = useState(null);
-
+  const { featureLayer, setFeatureLayer, setLayerView } = props;
   useEffect(() => {
     loadModules(["esri/layers/FeatureLayer"])
       .then(([FeatureLayer]) => {
@@ -12,6 +11,9 @@ function FeatureLayerWidget(props) {
         });
         setFeatureLayer(featureLayer);
         props.map.add(featureLayer);
+        props.view.whenLayerView(featureLayer).then((layerView) => {
+          setLayerView(layerView);
+        });
       })
       .catch((err) => {
         console.error(err);

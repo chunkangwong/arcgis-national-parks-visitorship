@@ -27,31 +27,64 @@ import "@esri/calcite-components/dist/components/calcite-shell-panel";
 import "@esri/calcite-components/dist/components/calcite-slider";
 import "@esri/calcite-components/dist/components/calcite-tooltip";
 import { Map } from "@esri/react-arcgis";
+import { loadModules } from "esri-loader";
 import { useState } from "react";
 import FeatureLayerWidget from "./components/FeatureLayerWidget";
 import HomeWidget from "./components/HomeWidget";
 
 function App() {
-  const [order, setOrder] = useState("DESC");
+  const [orderBy, setOrderBy] = useState("DESC");
   const [year, setYear] = useState("TOTAL");
   const [count, setCount] = useState(1);
+  const [features, setFeatures] = useState([]);
+  const [featureLayer, setFeatureLayer] = useState(null);
+  const [layerView, setLayerView] = useState(null);
 
-  function handleOrderChange(event) {
-    setOrder(event.target.value);
+  async function filterItems() {
+    const [TopFeaturesQuery, TopFilter] = await loadModules([
+      "esri/rest/support/TopFeaturesQuery",
+      "esri/rest/support/TopFilter",
+    ]);
+    const query = new TopFeaturesQuery({
+      topFilter: new TopFilter({
+        topCount: count,
+        groupByFields: ["State"],
+        orderByFields: `${year} ${orderBy}`,
+      }),
+      orderByFields: `${year} ${orderBy}`,
+      outFields: ["State, TOTAL, F2018, F2019, F2020, Park"],
+      returnGeometry: true,
+      cacheHint: false,
+    });
+
+    const results = await featureLayer.queryTopFeatures(query);
+    setFeatures(results.features);
+
+    query.orderByFields = [""];
+    const objectIds = await featureLayer.queryTopObjectIds(query);
+    layerView.filter = { objectIds };
   }
 
-  function handleYearChange(event) {
+  async function handleOrderByChange(event) {
+    setOrderBy(event.target.value);
+    await filterItems();
+  }
+
+  async function handleYearChange(event) {
     setYear(event.target.value);
+    await filterItems();
   }
 
-  function handleCountChange(event) {
+  async function handleCountChange(event) {
     setCount(event.target.value);
+    await filterItems();
   }
 
-  function handleReset() {
-    setOrder("DESC");
+  async function handleReset() {
+    setOrderBy("DESC");
     setYear("TOTAL");
     setCount(1);
+    await filterItems();
   }
 
   return (
@@ -61,7 +94,7 @@ function App() {
           <CalciteBlock heading="Filters" open>
             <div slot="control">
               <CalciteAction
-                {...(order === "DESC" && year === "TOTAL" && count === 1
+                {...(orderBy === "DESC" && year === "TOTAL" && count === 1
                   ? {
                       disabled: true,
                       icon: "reset",
@@ -87,8 +120,8 @@ function App() {
               Data type, per state
               <CalciteRadioGroup
                 width="full"
-                value={order}
-                onCalciteRadioGroupChange={handleOrderChange}
+                value={orderBy}
+                onCalciteRadioGroupChange={handleOrderByChange}
               >
                 <CalciteRadioGroupItem value="DESC" checked>
                   Most visited
@@ -172,6 +205,9 @@ function App() {
               ],
             },
           }}
+          featureLayer={featureLayer}
+          setFeatureLayer={setFeatureLayer}
+          setLayerView={setLayerView}
         />
         <HomeWidget />
       </Map>
