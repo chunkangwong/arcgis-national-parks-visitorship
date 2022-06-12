@@ -8,7 +8,7 @@ function FeatureLayerWidget(props) {
     loadModules(["esri/layers/FeatureLayer"])
       .then(([FeatureLayer]) => {
         const featureLayer = new FeatureLayer({
-          url: props.featureLayerProperties.url,
+          ...props.featureLayerProperties,
         });
         setFeatureLayer(featureLayer);
         props.map.add(featureLayer);
@@ -19,7 +19,7 @@ function FeatureLayerWidget(props) {
     return function cleanup() {
       props.map.remove(featureLayer);
     };
-  }, [props]);
+  }, []);
 }
 
 export default FeatureLayerWidget;

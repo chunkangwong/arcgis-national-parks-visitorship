@@ -1,4 +1,5 @@
 import {
+  CalciteAction,
   CalciteBlock,
   CalciteLabel,
   CalciteList,
@@ -10,7 +11,9 @@ import {
   CalciteShell,
   CalciteShellPanel,
   CalciteSlider,
+  CalciteTooltip,
 } from "@esri/calcite-components-react";
+import "@esri/calcite-components/dist/components/calcite-action";
 import "@esri/calcite-components/dist/components/calcite-block";
 import "@esri/calcite-components/dist/components/calcite-label";
 import "@esri/calcite-components/dist/components/calcite-list";
@@ -22,19 +25,71 @@ import "@esri/calcite-components/dist/components/calcite-select";
 import "@esri/calcite-components/dist/components/calcite-shell";
 import "@esri/calcite-components/dist/components/calcite-shell-panel";
 import "@esri/calcite-components/dist/components/calcite-slider";
+import "@esri/calcite-components/dist/components/calcite-tooltip";
 import { Map } from "@esri/react-arcgis";
+import { useState } from "react";
 import FeatureLayerWidget from "./components/FeatureLayerWidget";
 import HomeWidget from "./components/HomeWidget";
 
 function App() {
+  const [order, setOrder] = useState("DESC");
+  const [year, setYear] = useState("TOTAL");
+  const [count, setCount] = useState(1);
+
+  function handleOrderChange(event) {
+    setOrder(event.target.value);
+  }
+
+  function handleYearChange(event) {
+    setYear(event.target.value);
+  }
+
+  function handleCountChange(event) {
+    setCount(event.target.value);
+  }
+
+  function handleReset() {
+    setOrder("DESC");
+    setYear("TOTAL");
+    setCount(1);
+  }
+
   return (
     <CalciteShell>
       <CalciteShellPanel slot="primary-panel">
         <CalcitePanel heading="National Park Visitation">
           <CalciteBlock heading="Filters" open>
+            <div slot="control">
+              <CalciteAction
+                {...(order === "DESC" && year === "TOTAL" && count === 1
+                  ? {
+                      disabled: true,
+                      icon: "reset",
+                      id: "control-reset-el",
+                      onClick: handleReset,
+                    }
+                  : {
+                      indicator: true,
+                      icon: "reset",
+                      id: "control-reset-el",
+                      onClick: handleReset,
+                    })}
+              ></CalciteAction>
+              <CalciteTooltip
+                label="Reset to defaults"
+                reference-element="control-reset-el"
+                position="bottom"
+              >
+                Reset to defaults
+              </CalciteTooltip>
+            </div>
             <CalciteLabel>
               Data type, per state
-              <CalciteRadioGroup id="control-visited-type-el" width="full">
+              <CalciteRadioGroup
+                width="full"
+                value={order}
+                onCalciteRadioGroupChange={handleOrderChange}
+              >
                 <CalciteRadioGroupItem value="DESC" checked>
                   Most visited
                 </CalciteRadioGroupItem>
@@ -45,7 +100,10 @@ function App() {
             </CalciteLabel>
             <CalciteLabel>
               Year data to display
-              <CalciteSelect id="control-year-el">
+              <CalciteSelect
+                value={year}
+                onCalciteSelectChange={handleYearChange}
+              >
                 <CalciteOption
                   label="Total of all time"
                   value="TOTAL"
@@ -63,6 +121,8 @@ function App() {
                 ticks="1"
                 min="1"
                 max="5"
+                value={count}
+                onCalciteSliderChange={handleCountChange}
               ></CalciteSlider>
             </CalciteLabel>
           </CalciteBlock>
@@ -80,6 +140,37 @@ function App() {
         <FeatureLayerWidget
           featureLayerProperties={{
             url: "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/US_National_Parks_Annual_Visitation/FeatureServer/0",
+            outFields: ["*"],
+            popupTemplate: {
+              title: "{Park}",
+              content: [
+                {
+                  type: "fields",
+                  fieldInfos: [
+                    {
+                      fieldName: "TOTAL",
+                      label: "Total visits",
+                      format: { digitSeparator: true },
+                    },
+                    {
+                      fieldName: "F2018",
+                      label: "2018",
+                      format: { digitSeparator: true },
+                    },
+                    {
+                      fieldName: "F2019",
+                      label: "2019",
+                      format: { digitSeparator: true },
+                    },
+                    {
+                      fieldName: "F2020",
+                      label: "2020",
+                      format: { digitSeparator: true },
+                    },
+                  ],
+                },
+              ],
+            },
           }}
         />
         <HomeWidget />
