@@ -39,6 +39,7 @@ function App() {
   const [count, setCount] = useState(1);
   const [features, setFeatures] = useState([]);
   const [featureLayer, setFeatureLayer] = useState(null);
+  const [view, setView] = useState(null);
   const [layerView, setLayerView] = useState(null);
 
   async function filterItems() {
@@ -86,6 +87,23 @@ function App() {
     setYear("TOTAL");
     setCount(1);
     await filterItems();
+  }
+
+  function handleResultClick(result, index) {
+    const popup = features && features[parseInt(index, 10)];
+    if (popup) {
+      view.popup.open({
+        features: [popup],
+        location: popup.geometry,
+      });
+      view.goTo(
+        {
+          center: [result.geometry.longitude, result.geometry.latitude],
+          zoom: 4,
+        },
+        { duration: 400 }
+      );
+    }
   }
 
   return (
@@ -166,6 +184,7 @@ function App() {
                 <ResultListItem
                   attributes={feature.attributes}
                   index={index}
+                  onResultClick={() => handleResultClick(feature, index)}
                   key={index}
                 />
               ))}
@@ -218,7 +237,7 @@ function App() {
           setFeatureLayer={setFeatureLayer}
           setLayerView={setLayerView}
         />
-        <HomeWidget />
+        <HomeWidget setView={setView} />
       </Map>
     </CalciteShell>
   );
