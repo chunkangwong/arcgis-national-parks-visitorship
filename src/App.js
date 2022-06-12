@@ -28,7 +28,7 @@ import "@esri/calcite-components/dist/components/calcite-slider";
 import "@esri/calcite-components/dist/components/calcite-tooltip";
 import { Map } from "@esri/react-arcgis";
 import { loadModules } from "esri-loader";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import FeatureLayerWidget from "./components/FeatureLayerWidget";
 import HomeWidget from "./components/HomeWidget";
 import ResultListItem from "./components/ResultListItem";
@@ -41,6 +41,18 @@ function App() {
   const [featureLayer, setFeatureLayer] = useState(null);
   const [view, setView] = useState(null);
   const [layerView, setLayerView] = useState(null);
+
+  useEffect(() => {
+    if (featureLayer && layerView) {
+      filterItems()
+        .then(() => {
+          console.log("success");
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    }
+  }, [featureLayer, layerView]);
 
   async function filterItems() {
     const [TopFeaturesQuery, TopFilter] = await loadModules([
