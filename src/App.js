@@ -52,7 +52,7 @@ function App() {
           console.error(err);
         });
     }
-  }, [featureLayer, layerView]);
+  }, [featureLayer, layerView, year, orderBy, count]);
 
   async function filterItems() {
     const [TopFeaturesQuery, TopFilter] = await loadModules([
@@ -81,24 +81,20 @@ function App() {
 
   async function handleOrderByChange(event) {
     setOrderBy(event.target.value);
-    await filterItems();
   }
 
   async function handleYearChange(event) {
     setYear(event.target.value);
-    await filterItems();
   }
 
   async function handleCountChange(event) {
     setCount(event.target.value);
-    await filterItems();
   }
 
   async function handleReset() {
     setOrderBy("DESC");
     setYear("TOTAL");
     setCount(1);
-    await filterItems();
   }
 
   function handleResultClick(result, index) {
