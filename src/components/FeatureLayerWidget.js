@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
 import { loadModules } from "esri-loader";
+import { useEffect } from "react";
 
 function FeatureLayerWidget(props) {
   const { featureLayer, setFeatureLayer, setLayerView } = props;
