@@ -1,3 +1,9 @@
+import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
+import Map from "@arcgis/core/Map";
+import TopFeaturesQuery from "@arcgis/core/rest/support/TopFeaturesQuery";
+import TopFilter from "@arcgis/core/rest/support/TopFilter";
+import MapView from "@arcgis/core/views/MapView";
+import Home from "@arcgis/core/widgets/Home";
 import {
   CalciteAction,
   CalciteBlock,
@@ -26,11 +32,7 @@ import "@esri/calcite-components/dist/components/calcite-shell";
 import "@esri/calcite-components/dist/components/calcite-shell-panel";
 import "@esri/calcite-components/dist/components/calcite-slider";
 import "@esri/calcite-components/dist/components/calcite-tooltip";
-import { Map } from "@esri/react-arcgis";
-import { loadModules } from "esri-loader";
-import { useState, useEffect } from "react";
-import FeatureLayerWidget from "./components/FeatureLayerWidget";
-import HomeWidget from "./components/HomeWidget";
+import { useEffect, useRef, useState } from "react";
 import ResultListItem from "./components/ResultListItem";
 
 function App() {
@@ -41,6 +43,67 @@ function App() {
   const [featureLayer, setFeatureLayer] = useState(null);
   const [view, setView] = useState(null);
   const [layerView, setLayerView] = useState(null);
+
+  const mapDiv = useRef(null);
+
+  useEffect(() => {
+    const map = new Map({
+      basemap: "topo-vector",
+    });
+
+    const view = new MapView({
+      container: mapDiv.current,
+      map,
+      center: [-120, 45],
+      zoom: 3,
+    });
+    setView(view);
+
+    const home = new Home({
+      view,
+    });
+    view.ui.add(home, "top-right");
+
+    const featureLayer = new FeatureLayer({
+      url: "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/US_National_Parks_Annual_Visitation/FeatureServer/0",
+      outFields: ["*"],
+      popupTemplate: {
+        title: "{Park}",
+        content: [
+          {
+            type: "fields",
+            fieldInfos: [
+              {
+                fieldName: "TOTAL",
+                label: "Total visits",
+                format: { digitSeparator: true },
+              },
+              {
+                fieldName: "F2018",
+                label: "2018",
+                format: { digitSeparator: true },
+              },
+              {
+                fieldName: "F2019",
+                label: "2019",
+                format: { digitSeparator: true },
+              },
+              {
+                fieldName: "F2020",
+                label: "2020",
+                format: { digitSeparator: true },
+              },
+            ],
+          },
+        ],
+      },
+    });
+    setFeatureLayer(featureLayer);
+    map.add(featureLayer);
+    view.whenLayerView(featureLayer).then((layerView) => {
+      setLayerView(layerView);
+    });
+  }, []);
 
   useEffect(() => {
     if (featureLayer && layerView) {
@@ -55,10 +118,6 @@ function App() {
   }, [featureLayer, layerView, year, orderBy, count]);
 
   async function filterItems() {
-    const [TopFeaturesQuery, TopFilter] = await loadModules([
-      "esri/rest/support/TopFeaturesQuery",
-      "esri/rest/support/TopFilter",
-    ]);
     const query = new TopFeaturesQuery({
       topFilter: new TopFilter({
         topCount: count,
@@ -200,53 +259,7 @@ function App() {
           </CalciteBlock>
         </CalcitePanel>
       </CalciteShellPanel>
-      <Map
-        viewProperties={{
-          center: [-120, 45],
-          zoom: 3,
-        }}
-      >
-        <FeatureLayerWidget
-          featureLayerProperties={{
-            url: "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/US_National_Parks_Annual_Visitation/FeatureServer/0",
-            outFields: ["*"],
-            popupTemplate: {
-              title: "{Park}",
-              content: [
-                {
-                  type: "fields",
-                  fieldInfos: [
-                    {
-                      fieldName: "TOTAL",
-                      label: "Total visits",
-                      format: { digitSeparator: true },
-                    },
-                    {
-                      fieldName: "F2018",
-                      label: "2018",
-                      format: { digitSeparator: true },
-                    },
-                    {
-                      fieldName: "F2019",
-                      label: "2019",
-                      format: { digitSeparator: true },
-                    },
-                    {
-                      fieldName: "F2020",
-                      label: "2020",
-                      format: { digitSeparator: true },
-                    },
-                  ],
-                },
-              ],
-            },
-          }}
-          featureLayer={featureLayer}
-          setFeatureLayer={setFeatureLayer}
-          setLayerView={setLayerView}
-        />
-        <HomeWidget setView={setView} />
-      </Map>
+      <div id="mapDiv" ref={mapDiv} style={{ height: "100%" }}></div>
     </CalciteShell>
   );
 }
