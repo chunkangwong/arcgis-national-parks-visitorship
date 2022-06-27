@@ -1,4 +1,4 @@
-# React ArcGIS Calcite App
+# ArcGIS National Parks Visitorship
 
 This project is to demonstrate the use of Calcite component and ArcGIS JavaSript API in a React app.
 
