@@ -40,6 +40,7 @@ const setRenderer = async () => {
 function App() {
   const viewDiv = useRef<HTMLDivElement>(null);
   const layerView = useRef<__esri.FeatureLayerView>();
+  const [loading, setLoading] = useState(true);
   const [count, setCount] = useState(countDefault);
   const [orderBy, setOrderBy] = useState(orderByDefault);
   const [year, setYear] = useState(yearDefault);
@@ -60,6 +61,7 @@ function App() {
       if (!layer || !layerView.current) {
         return;
       }
+      setLoading(true);
       const query = new TopFeaturesQuery({
         topFilter: new TopFilter({
           topCount: count,
@@ -81,6 +83,7 @@ function App() {
       });
 
       setGraphics(results.features);
+      setLoading(false);
     };
     filterItems();
   }, [orderBy, count, year]);
@@ -116,7 +119,7 @@ function App() {
             handleYearChange={handleYearChange}
             handleReset={handleReset}
           />
-          <Results year={year} graphics={graphics} />
+          <Results year={year} graphics={graphics} loading={loading} />
         </CalcitePanel>
       </CalciteShellPanel>
       <div id="viewDiv" ref={viewDiv} />

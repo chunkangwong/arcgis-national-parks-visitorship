@@ -9,9 +9,10 @@ import { view } from "../arcgis";
 interface ResultsProps {
   graphics: __esri.Graphic[];
   year: string;
+  loading: boolean;
 }
 
-const Results = ({ graphics, year }: ResultsProps) => {
+const Results = ({ graphics, year, loading }: ResultsProps) => {
   const handleResultClick = (graphic: __esri.Graphic, index: number) => () => {
     const popup = graphics && graphics[index];
     if (popup) {
@@ -35,6 +36,7 @@ const Results = ({ graphics, year }: ResultsProps) => {
       collapsible
       heading={`Results (${graphics.length})`}
       open={graphics.length > 0}
+      loading={loading}
     >
       <CalciteList>
         {graphics.map((graphic, index) => (
